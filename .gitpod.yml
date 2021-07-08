@@ -9,11 +9,12 @@ ports:
 
 tasks:
   - init: |
+      pipenv lock --pre --clear
       pip install -r requires-install.txt
       pip install -r requires-dev.txt
       pip install -r requires-testing.txt
+      pip install dash
       cd dash/dash-renderer && renderer build && cd ../../
-      git clone --depth 1 https://github.com/plotly/dash-html-components.git
       git clone --depth 1 https://github.com/plotly/dash-html-components.git
       git clone --depth 1 https://github.com/plotly/dash-core-components.git
       cd dash-html-components; npm ci && npm run build; rm -rf !(.|..|DESCRIPTION|LICENSE.txt|LICENSE|NAMESPACE|.Rbuildignore|R|man|inst|vignettes|build)
