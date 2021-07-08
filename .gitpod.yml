@@ -9,14 +9,21 @@ tasks:
       mkdir packages
       git clone --depth 1 https://github.com/plotly/dash-core-components.git
       cd dash-core-components && npm ci && npm run build && python setup.py sdist && mv dist/* ../packages/  && cd ..
-      ls -la packages
       git clone --depth 1 https://github.com/plotly/dash-table.git
       cd dash-table && npm ci && npm run build && python setup.py sdist && mv dist/* ../packages/ && cd ..
       git clone --depth 1 https://github.com/plotly/dash-html-components.git
       cd dash-html-components && npm ci && npm run build && python setup.py sdist && mv dist/* ../packages/ && cd ..
-      ls -la packages
-  - command:
+      pip install -e . --progress-bar off && pip list | grep dash
+      npm install --production && npm run initialize
+      cd dash/dash-renderer && renderer build && cd ../../ && python setup.py sdist && mv dist/* packages/
       python setup.py sdist
+      pip install packages/dash_core_components-1.16.0.tar.gz
+      pip install packages/dash_html_components-1.1.3.tar.gz
+      pip install packages/dash_table-4.11.3.tar.gz
+      pip install dist/dash-1.20.0.tar.gz
+      ls -la packages
+    command:
+      python dash_intro.py
 
 # You should be able to install dash with:
 # pip install dist/dash-1.20.0.tar.gz
