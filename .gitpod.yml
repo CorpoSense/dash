@@ -1,0 +1,28 @@
+image:
+  file: .gitpod.Dockerfile
+
+ports:
+- port: 5432 # PostgreSQL
+  onOpen: ignore
+- port: 8050 # Dash
+  onOpen: open-preview
+
+tasks:
+  - init: |
+      pip install -r requires-install.txt
+      pip install -r requires-dev.txt
+      pip install -r requires-testing.txt
+      cd dash/dash-renderer && renderer build && cd ../../
+      git clone --depth 1 https://github.com/plotly/dash-html-components.git
+      git clone --depth 1 https://github.com/plotly/dash-html-components.git
+      git clone --depth 1 https://github.com/plotly/dash-core-components.git
+      cd dash-html-components; npm ci && npm run build; rm -rf !(.|..|DESCRIPTION|LICENSE.txt|LICENSE|NAMESPACE|.Rbuildignore|R|man|inst|vignettes|build)
+      cd ../dash-core-components; npm ci && npm run build; rm -rf !(.|..|DESCRIPTION|LICENSE.txt|LICENSE|NAMESPACE|.Rbuildignore|R|man|inst|vignettes|build)
+      cd ..
+      git clone --depth 1 https://github.com/plotly/dash-table.git
+      cd dash-table && npm ci && npm run build && python setup.py sdist && mv dist/* ../packages/ && cd ..
+      git clone --depth 1 https://github.com/plotly/dash-core-components.git
+      cd dash-core-components && npm ci && npm run build && python setup.py sdist && mv dist/* ../packages/  && cd ..
+    command: |
+      python setup.py sdist
+  - command: gp await-port 8050 && sleep 2 && gp preview "$(gp url 8050)"
